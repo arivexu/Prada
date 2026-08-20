@@ -78,33 +78,33 @@ Each few-shot cell should be reported as **mean +/- standard deviation (%)** .
 
 | Method / 方法 | 1-shot | 2-shot | 4-shot | 8-shot | 16-shot |
 |---|---:|---:|---:|---:|---:|
-| UNI + LP | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX |
-| Virchow2 + LP | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX |
-| Prada Tuning | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX |
+| UNI + LP | 54.9% ± 4.1% | 63.3% ± 2.9% | 66.1% ± 6.9% | 71.3% ± 4.0% | 72.9% ± 3.5% |
+| Virchow2 + LP | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% |
+| Prada Tuning | 56.8% ± 2.8% | 65.2% ± 3.5% | 69.2% ± 4.6% | 73.2% ± 1.4% | 74.3% ± 0.6% |
 
 ### BACH
 
 | Method / 方法 | 1-shot | 2-shot | 4-shot | 8-shot | 16-shot |
 |---|---:|---:|---:|---:|---:|
-| UNI + LP | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX |
-| Virchow2 + LP | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX |
-| Prada Tuning | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX |
+| UNI + LP | 46.7% ± 5.1% | 45% ± 4.1% | 64.2% ± 1.2% | 74.2% ± 1.2% | 77.5% ± 2.0% |
+| Virchow2 + LP | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% |
+| Prada Tuning | 36.7% ± 1.2% | 46.7% ± 4.7% | 58.3% ± 3.1% | 68.3% ± 1.2% | 73.3% ± 1.2% |
 
 ### MHIST
 
 | Method / 方法 | 1-shot | 2-shot | 4-shot | 8-shot | 16-shot |
 |---|---:|---:|---:|---:|---:|
-| UNI + LP | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX |
-| Virchow2 + LP | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX |
-| Prada Tuning | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX |
+| UNI + LP | 53.4% ± 6.6% | 57.7% ± 7.8% | 60.3% ± 3.7% | 65.3% ± 2.8% | 67.8% ± 1.7% |
+| Virchow2 + LP | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% |
+| Prada Tuning | 60.2% ± 0.2% | 58.2% ± 2.3% | 62.4% ± 0.3% | 66.1% ± 2.0% | 68.4% ± 1.5% |
 
 ### BreakHis
 
 | Method / 方法 | 1-shot | 2-shot | 4-shot | 8-shot | 16-shot |
 |---|---:|---:|---:|---:|---:|
-| UNI + LP | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX |
-| Virchow2 + LP | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX |
-| Prada Tuning | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX | XXX +/- XXX |
+| UNI + LP | 25.3% ± 1.6% | 28.5% ± 7.0% | 38.1% ± 3.4% | 41.0% ± 2.0% | 50.6% ± 3.9% |
+| Virchow2 + LP | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% |
+| Prada Tuning | 25.1% ± 1.3% | 28.6% ± 4.0% | 36.9% ± 2.4% | 39.7% ± 1.6% | 53.5% ± 2.6% |
 
 ## Result Summary Template / 结果总结模板
 
