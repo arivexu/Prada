@@ -18,7 +18,6 @@ All pathology foundation-model encoders remain frozen throughout linear-probe tr
 
 | Method / 方法 | Pretraining and backbone / 预训练与骨干网络 | Input / 输入 | Downstream adaptation / 下游适配 | Feature used / 使用的特征 |
 |---|---|---:|---|---|
-| CLIP + LP | General-domain CLIP ViT-B/16 / 通用领域 CLIP ViT-B/16 | 224 x 224 | Frozen image encoder + linear head / 冻结图像编码器 + 线性头 | CLIP image representation / CLIP 图像表征 |
 | Prada Tuning | General-domain CLIP ViT-B/16 / 通用领域 CLIP ViT-B/16 | 224 x 224 | DCP + ViSo Adapter / DCP + ViSo Adapter | Adapted image-text representation / 适配后的图文表征 |
 | UNI + LP | Pathology-pretrained UNI ViT-L/16 / 病理预训练 UNI ViT-L/16 | 224 x 224 | Frozen encoder + linear head / 冻结编码器 + 线性头 | 1,024-dimensional global representation / 1,024 维全局表征 |
 | Virchow2 + LP | Pathology-pretrained Virchow2 ViT-H/14 / 病理预训练 Virchow2 ViT-H/14 | 224 x 224 | Frozen encoder + linear head / 冻结编码器 + 线性头 | CLS token concatenated with mean patch token, 2,560 dimensions / CLS token 与 patch token 均值拼接，2,560 维 |
@@ -79,15 +78,15 @@ Each few-shot cell should be reported as **mean +/- standard deviation (%)** .
 | Method / 方法 | 1-shot | 2-shot | 4-shot | 8-shot | 16-shot |
 |---|---:|---:|---:|---:|---:|
 | UNI + LP | 54.9% ± 4.1% | 63.3% ± 2.9% | 66.1% ± 6.9% | 71.3% ± 4.0% | 72.9% ± 3.5% |
-| Virchow2 + LP | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% |
+| Virchow2 + LP | 54.2% ± 5.6% | 62.0% ± 9.1% | 67.3% ± 4.2% | 72.8% ± 3.1% | 73.7% ± 5.6% |
 | Prada Tuning | 56.8% ± 2.8% | 65.2% ± 3.5% | 69.2% ± 4.6% | 73.2% ± 1.4% | 74.3% ± 0.6% |
 
 ### BACH
 
 | Method / 方法 | 1-shot | 2-shot | 4-shot | 8-shot | 16-shot |
 |---|---:|---:|---:|---:|---:|
-| UNI + LP | 46.7% ± 5.1% | 45% ± 4.1% | 64.2% ± 1.2% | 74.2% ± 1.2% | 77.5% ± 2.0% |
-| Virchow2 + LP | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% |
+| UNI + LP | 46.7% ± 5.1% | 45.0% ± 4.1% | 64.2% ± 1.2% | 74.2% ± 1.2% | 77.5% ± 2.0% |
+| Virchow2 + LP | 48.3% ± 3.1% | 70.8% ± 10.3% | 85.8% ± 6.6% | 95.8% ± 3.1% | 96.7% ± 3.1% |
 | Prada Tuning | 36.7% ± 1.2% | 46.7% ± 4.7% | 58.3% ± 3.1% | 68.3% ± 1.2% | 73.3% ± 1.2% |
 
 ### MHIST
@@ -95,7 +94,7 @@ Each few-shot cell should be reported as **mean +/- standard deviation (%)** .
 | Method / 方法 | 1-shot | 2-shot | 4-shot | 8-shot | 16-shot |
 |---|---:|---:|---:|---:|---:|
 | UNI + LP | 53.4% ± 6.6% | 57.7% ± 7.8% | 60.3% ± 3.7% | 65.3% ± 2.8% | 67.8% ± 1.7% |
-| Virchow2 + LP | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% |
+| Virchow2 + LP | 45.3% ± 1.5% | 50.5% ± 3.3% | 51.1% ± 3.8% | 54.9% ± 3.2% | 64.9% ± 6.2% |
 | Prada Tuning | 60.2% ± 0.2% | 58.2% ± 2.3% | 62.4% ± 0.3% | 66.1% ± 2.0% | 68.4% ± 1.5% |
 
 ### BreakHis
@@ -103,29 +102,37 @@ Each few-shot cell should be reported as **mean +/- standard deviation (%)** .
 | Method / 方法 | 1-shot | 2-shot | 4-shot | 8-shot | 16-shot |
 |---|---:|---:|---:|---:|---:|
 | UNI + LP | 25.3% ± 1.6% | 28.5% ± 7.0% | 38.1% ± 3.4% | 41.0% ± 2.0% | 50.6% ± 3.9% |
-| Virchow2 + LP | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% | XXX% ± XXX% |
+| Virchow2 + LP | 20.3% ± 3.6% | 24.8% ± 4.5% | 35.0% ± 3.3% | 38.6% ± 2.7% | 49.0% ± 2.0% |
 | Prada Tuning | 25.1% ± 1.3% | 28.6% ± 4.0% | 36.9% ± 2.4% | 39.7% ± 1.6% | 53.5% ± 2.6% |
 
-## Result Summary Template / 结果总结模板
+## Result Summary / 结果总结
 
-Across the four datasets and five few-shot settings, Prada Tuning, UNI + LP, and Virchow2 + LP obtained average accuracies of `XXX`, `XXX`, and `XXX`, respectively. UNI and Virchow2 achieved higher accuracy than Prada Tuning in `XXX` and `XXX` of the 20 dataset-shot combinations, respectively. The strongest pathology foundation-model result was `XXX` under `XXX`, while Prada Tuning achieved `XXX` under the same setting.
+The comparison revealed clear dataset-dependent performance patterns. Prada Tuning achieved the highest observed mean accuracy among the three evaluated methods across all five shot settings on both PCam and MHIST. On BreakHis, Prada Tuning achieved the highest values in the 2-shot and 16-shot settings, while UNI + LP performed best in the 1-shot, 4-shot, and 8-shot settings. Virchow2 + LP showed a distinct advantage on BACH and achieved the highest mean accuracy across all five shot settings.
 
-> **中文：** 在四个数据集和五种少样本设置下，Prada Tuning、UNI + LP 和 Virchow2 + LP 的平均准确率分别为 `XXX`、`XXX` 和 `XXX`。在 20 个“数据集-shot”组合中，UNI 和 Virchow2 分别有 `XXX` 个和 `XXX` 个设置的准确率高于 Prada Tuning。表现最强的病理基础模型结果是 `XXX`，对应设置为 `XXX`；在相同设置下，Prada Tuning 的结果为 `XXX`。
+> **中文：** 对比结果呈现出明显的数据集依赖性。与另外两种方法相比，Prada Tuning 在 PCam 和 MHIST 的全部五种 shot 设置下均取得了最高的平均准确率。在 BreakHis 上，Prada Tuning 在 2-shot 和 16-shot 设置下表现最佳，而 UNI + LP 在 1-shot、4-shot 和 8-shot 设置下取得了最高结果。Virchow2 + LP 则在 BACH 上表现出明显优势，并在全部五种 shot 设置下取得了最高的平均准确率。
 
-In the lowest-data regime (1- and 2-shot), the results show `XXX`. As the number of labeled examples increased to 8 and 16 per class, `XXX`.
+In the lowest-data regime, comprising the 1-shot and 2-shot settings, no single approach consistently dominated across all four datasets. Prada Tuning achieved the highest observed mean accuracy on PCam and MHIST in both settings. Virchow2 + LP performed best on BACH, whereas the strongest BreakHis results were divided between UNI + LP and Prada Tuning.
 
-> **中文：** 在数据量最低的 1-shot 和 2-shot 场景中，结果显示 `XXX`。当每类有标签样本数增加到 8 和 16 时，`XXX`。
+> **中文：** 在数据量最低的 1-shot 和 2-shot 设置下，没有任何一种方法能够在四个数据集上始终保持领先。Prada Tuning 在 PCam 和 MHIST 的两种设置下均取得了最高的平均准确率。Virchow2 + LP 在 BACH 上表现最佳，而 BreakHis 上的最佳结果则分别由 UNI + LP 和 Prada Tuning 取得。
 
-These observations indicate `XXX`. Because the compared encoders differ substantially in pretraining scale, data composition, architecture, and input resolution, the results should be interpreted as a practical contextual comparison. They do not demonstrate that one adaptation mechanism is intrinsically superior to another pathology backbone under fully controlled conditions.
+With more labeled examples, Virchow2 + LP showed particularly strong performance on BACH, reaching 95.8% ± 3.1% and 96.7% ± 3.1% in the 8-shot and 16-shot settings, respectively. Under the same settings, Prada Tuning maintained the highest observed mean accuracy on PCam and MHIST. It also achieved the best 16-shot result on BreakHis, with an accuracy of 53.5% ± 2.6%.
 
-> **中文：** 这些观察结果表明 `XXX`。由于所比较的编码器在预训练规模、数据构成、网络结构和输入分辨率方面存在显著差异，因此这些结果应被解释为实际应用背景下的上下文比较，而不能证明某一种适配机制在完全受控条件下内在优于另一种病理骨干网络。
+> **中文：** 随着有标签样本数量增加，Virchow2 + LP 在 BACH 上表现出尤为突出的性能，在 8-shot 和 16-shot 设置下分别达到 95.8% ± 3.1% 和 96.7% ± 3.1%。在相同的 shot 设置下，Prada Tuning 在 PCam 和 MHIST 上仍保持最高的平均准确率。此外，Prada Tuning 在 BreakHis 的 16-shot 设置下也取得了最佳结果，准确率为 53.5% ± 2.6%。
+
+Overall, the pathology-pretrained encoders did not provide a uniform advantage across datasets and shot settings. Virchow2 offered substantial benefits on BACH, whereas Prada Tuning remained consistently competitive on PCam and MHIST and showed mixed but competitive performance on BreakHis. These findings indicate that adapting a general-domain CLIP model can remain practically competitive with frozen pathology-pretrained representations, although the relative advantage depends strongly on the target dataset.
+
+> **中文：** 总体而言，病理预训练编码器并未在所有数据集和 shot 设置下表现出一致优势。Virchow2 在 BACH 上带来了明显收益，而 Prada Tuning 在 PCam 和 MHIST 上始终保持较强竞争力，并在 BreakHis 上呈现出各有胜负但总体可比的表现。这些结果表明，与冻结的病理预训练表征相比，适配通用领域 CLIP 模型仍然可以具有实际竞争力，但不同方法的相对优势在很大程度上取决于目标数据集。
+
+Because the compared systems differ substantially in their pretraining corpora, pretraining objectives, model capacity, architecture, and feature construction, these findings should be interpreted as a practical contextual comparison. They do not establish the intrinsic superiority of any adaptation mechanism or backbone under fully controlled conditions.
+
+> **中文：** 由于所比较的系统在预训练语料、预训练目标、模型容量、网络结构和特征构建方式方面存在显著差异，因此这些结果应被解释为实际应用背景下的上下文比较。它们不能证明任何一种适配机制或骨干网络在完全受控条件下具有内在优越性。
 
 ## Interpretation Boundaries / 解释边界
 
-The matched few-shot manifests, frozen encoders, common linear-head objective, and complete test sets improve downstream comparability. However, the backbones are not controlled for pretraining corpus, parameter count, architecture, resolution, or compute. These results therefore contextualize whether general-domain CLIP adaptation is practically competitive with released pathology-pretrained representations; they do not replace the controlled PEFT comparisons in the main study.
+The matched few-shot manifests and complete test partitions improve comparability across the three methods. Freezing the encoders and applying the same linear-head objective also standardize the evaluation of UNI and Virchow2. However, Prada Tuning and the pathology foundation-model baselines are not controlled for pretraining corpus, pretraining objective, parameter count, architecture, feature construction, or computational cost. The results therefore contextualize whether adapting general-domain CLIP is practically competitive with released pathology-pretrained representations. They do not replace the controlled comparisons among PEFT strategies conducted under the common CLIP backbone in the main study.
 
-> **中文：** 匹配的少样本清单、冻结编码器、统一的线性头训练目标和完整测试集提高了下游比较的可比性。然而，各骨干网络在预训练语料、参数量、网络结构、输入分辨率和计算量方面并未受到控制。因此，这些结果用于说明通用领域 CLIP 适配与已发布病理预训练表征相比是否具有实际竞争力，但不能替代正文中受控的 PEFT 方法比较。
+> **中文：** 匹配的少样本清单和完整的测试划分提高了三种方法之间的可比性。冻结编码器并采用相同的线性分类头训练目标，也使 UNI 和 Virchow2 的评估更加统一。然而，Prada Tuning 与病理基础模型基线在预训练语料、预训练目标、参数量、网络结构、特征构建方式和计算成本方面并未受到严格控制。因此，这些结果用于说明通用领域 CLIP 适配与已发布的病理预训练表征相比是否具有实际竞争力，但不能替代正文中在统一 CLIP 骨干网络下进行的受控 PEFT 策略比较。
 
-The scope is additionally limited to four public image-level classification datasets. The reported values should not be interpreted as evidence of patient-level generalization, clinical utility, or superiority on whole-slide tasks.
+The evaluation is additionally limited to four public image-level classification datasets. Patient- or case-level independence cannot be verified for BACH and MHIST because the required grouping metadata are unavailable. The BreakHis partitions are image-disjoint but not patient-disjoint. Consequently, the reported results should not be interpreted as evidence of patient-independent generalization, clinical utility, or superiority on whole-slide image tasks.
 
-> **中文：** 此外，本评估范围仅限于四个公开的图像级分类数据集。所报告的数值不应被解释为患者级泛化能力、临床实用性或全切片任务优越性的证据。
+> **中文：** 此外，本次评估仅限于四个公开的图像级分类数据集。由于缺少必要的分组元数据，BACH 和 MHIST 的患者级或病例级独立性无法得到验证。BreakHis 的各数据划分在图像层面互不重叠，但并非患者级互斥。因此，所报告的结果不应被解释为患者独立泛化能力、临床实用性或全切片图像任务优越性的证据。
