@@ -137,124 +137,182 @@ The evaluation is additionally limited to four public image-level classification
 
 > **中文：** 此外，本次评估仅限于四个公开的图像级分类数据集。由于缺少必要的分组元数据，BACH 和 MHIST 的患者级或病例级独立性无法得到验证。BreakHis 的各数据划分在图像层面互不重叠，但并非患者级互斥。因此，所报告的结果不应被解释为患者独立泛化能力、临床实用性或全切片图像任务优越性的证据。
 
-## Reproducibility of the CLIP-Based Baselines in Table I / 表 I 中 CLIP 基线的可复现性说明
+## Reproducibility of the CLIP-Based SOTA Comparisons / 基于 CLIP 的 SOTA 比较可复现性说明
 
-This section documents the optimization and model-selection procedures for the CLIP-based baseline comparison reported in Table I of the manuscript. It is independent of the pathology foundation-model contextual comparison and focuses only on the general-domain CLIP baselines, including Linear Probe, Full Fine-tuning, CoOp, CoCoOp, CLIP-Adapter, Tip-Adapter, MaPLe, UPT, MCPL, LoRA, PromptSRC, and CoPrompt.
+This section documents the experimental protocol used for the CLIP-based baseline comparisons reported in Table I of the manuscript. The section focuses exclusively on the general-domain CLIP comparisons and does not include the separate contextual comparison with pathology-pretrained foundation models.
 
-> **中文：** 本节记录论文表 I 中基于 CLIP 的基线比较所采用的优化和模型选择流程。本节独立于病理基础模型上下文比较，仅关注通用领域 CLIP 基线，包括 Linear Probe、Full Fine-tuning、CoOp、CoCoOp、CLIP-Adapter、Tip-Adapter、MaPLe、UPT、MCPL、LoRA、PromptSRC 和 CoPrompt。
+> **中文：** 本节记录论文表 I 中基于 CLIP 的基线比较所采用的实验协议。本节仅关注通用领域 CLIP 模型下的比较，不包含病理预训练基础模型的独立上下文比较。
 
-### Shared Evaluation Protocol / 统一评估协议
+The purpose of these experiments is to compare Prada Tuning with representative parameter-efficient fine-tuning and adaptation strategies under a common CLIP-based setting. The common CLIP backbone allows the comparison to focus on the relative behavior of different adaptation strategies while keeping the general model family fixed.
 
-All CLIP-based methods use the same general-domain CLIP ViT-B/16 backbone and `224 x 224` image inputs. The same base train/validation/test partitions are used for every method. For an N-shot experiment, N training images are sampled per class from the base training partition. The validation subset contains at most `min(N, 4)` images per class, and the complete base test partition is retained for final evaluation. The primary metric is top-1 classification accuracy.
+> **中文：** 这些实验旨在统一的 CLIP 设置下，将 Prada Tuning 与具有代表性的参数高效微调和适配方法进行比较。使用相同的 CLIP 骨干网络，可以在保持通用模型家族一致的情况下，重点比较不同适配策略的相对表现。
 
-> **中文：** 所有基于 CLIP 的方法均使用相同的通用领域 CLIP ViT-B/16 骨干网络和 `224 x 224` 输入图像。所有方法使用相同的基础训练集、验证集和测试集划分。对于 N-shot 实验，从基础训练集中为每个类别采样 N 张训练图像。验证集每类最多包含 `min(N, 4)` 张图像，最终评估使用完整的基础测试集。主要评价指标为 Top-1 分类准确率。
+### Compared Methods / 对比方法
 
-The four datasets are evaluated at the image level using the 1-, 2-, 4-, 8-, and 16-shot settings. PCam uses its predefined partitions; BACH uses a class-stratified 80/10/10 image-level split; MHIST retains its official test partition and divides the official training partition into training and validation subsets; and BreakHis uses a class-stratified 80/10/10 image-level split.
+The manuscript evaluates the following methods: Linear Probe, Full Fine-tuning, CoOp, CoCoOp, CLIP-Adapter, Tip-Adapter, MaPLe, UPT, MCPL, LoRA, PromptSRC, CoPrompt, and Prada Tuning.
 
-> **中文：** 四个数据集均在图像级别进行评估，并使用 1、2、4、8 和 16-shot 设置。PCam 使用官方预定义划分；BACH 使用按类别分层的 80/10/10 图像级划分；MHIST 保留官方测试集，并将官方训练集进一步划分为训练集和验证集；BreakHis 使用按类别分层的 80/10/10 图像级划分。
+> **中文：** 论文评估了以下方法：Linear Probe、Full Fine-tuning、CoOp、CoCoOp、CLIP-Adapter、Tip-Adapter、MaPLe、UPT、MCPL、LoRA、PromptSRC、CoPrompt 和 Prada Tuning。
 
-All trainable neural baselines use cross-entropy loss. Unless otherwise stated, they use SGD, cosine learning-rate decay, one epoch of constant warm-up at `1e-5`, CLIP normalization, and FP16 computation. The test partition is used only for final reporting and is not used to select learning rates, coefficients, or checkpoints.
+The method descriptions below follow the definitions given in the manuscript.
 
-> **中文：** 所有可训练的神经网络基线均使用交叉熵损失。除非另有说明，这些方法均使用 SGD、余弦学习率衰减、1 个 epoch 的固定 `1e-5` 预热学习率、CLIP 归一化和 FP16 计算。测试集仅用于最终结果报告，不用于选择学习率、方法系数或模型检查点。
+> **中文：** 下述方法描述均遵循论文中的定义。
 
-### Method-Specific Optimization Settings / 方法特定优化设置
+| Method / 方法 | Description in the manuscript / 论文中的方法描述 | Backbone setting / 骨干网络设置 |
+|---|---|---|
+| Linear Probe | Trains a classification head while fixing the backbone parameters / 固定骨干网络参数，仅训练分类头 | CLIP ViT-B/16 vision encoder / CLIP ViT-B/16 视觉编码器 |
+| Full Fine-tuning | Updates the classification head together with the backbone / 同时更新分类头和骨干网络 | CLIP ViT-B/16 vision encoder / CLIP ViT-B/16 视觉编码器 |
+| CoOp | Trains shallow text prompts while freezing the backbone / 冻结骨干网络，训练浅层文本 prompt | CLIP ViT-B/16 / CLIP ViT-B/16 |
+| CoCoOp | Learns conditioning prompts explicitly on image instances while keeping the backbone frozen / 在冻结骨干网络的条件下，针对图像实例学习条件 prompt | CLIP ViT-B/16 / CLIP ViT-B/16 |
+| CLIP-Adapter | Trains a parameterized feature adapter at the end of the visual encoder while keeping the backbone frozen / 冻结骨干网络，在视觉编码器末端训练参数化特征适配器 | CLIP ViT-B/16 / CLIP ViT-B/16 |
+| Tip-Adapter | Constructs an adapter using a key-value cache from the few-shot training set without gradient-based training / 利用少样本训练集构建键值缓存，不进行基于梯度的训练 | CLIP ViT-B/16 / CLIP ViT-B/16 |
+| MaPLe | Learns vision-language prompts; the first-layer prompt is initialized with ``a photo of a <category>'', while prompts in other layers are randomly initialized / 学习视觉语言 prompt；第一层 prompt 使用 ``a photo of a <category>'' 初始化，其他层 prompt 随机初始化 | CLIP ViT-B/16 / CLIP ViT-B/16 |
+| UPT | Generates prompts using two MLP layers and transforms them with self-attention layers / 使用两个 MLP 层生成 prompt，并通过自注意力层进行变换 | CLIP ViT-B/16 / CLIP ViT-B/16 |
+| MCPL | Follows the official implementation / 遵循官方实现 | CLIP ViT-B/16 / CLIP ViT-B/16 |
+| LoRA | Follows the official implementation of low-rank adaptation / 遵循低秩适配方法的官方实现 | CLIP ViT-B/16 / CLIP ViT-B/16 |
+| PromptSRC | Follows the official implementation / 遵循官方实现 | CLIP ViT-B/16 / CLIP ViT-B/16 |
+| CoPrompt | Follows the official implementation / 遵循官方实现 | CLIP ViT-B/16 / CLIP ViT-B/16 |
+| Prada Tuning | Jointly combines DCP prompt tuning and ViSo Adapter tuning / 联合使用 DCP prompt tuning 和 ViSo Adapter tuning | CLIP ViT-B/16 / CLIP ViT-B/16 |
 
-The following table summarizes the documented configurations for the CLIP-based comparison. The epoch notation `50/100/200` denotes 50 epochs for 1-shot, 100 epochs for 2- and 4-shot, and 200 epochs for 8- and 16-shot experiments.
+The manuscript specifies that the prompt depth of MaPLe is 9 and its prompt length is 2. The first-layer prompt is initialized using the category-description template, while the prompts in subsequent layers are randomly initialized.
 
-> **中文：** 下表总结了基于 CLIP 的比较中所记录的方法特定配置。训练轮数 `50/100/200` 表示 1-shot 使用 50 个 epoch，2-shot 和 4-shot 使用 100 个 epoch，8-shot 和 16-shot 使用 200 个 epoch。
+> **中文：** 论文明确说明 MaPLe 的 prompt depth 为 9，prompt length 为 2。第一层 prompt 使用类别描述模板进行初始化，后续层的 prompt 采用随机初始化。
 
-| Method / 方法 | Trainable component / 可训练部分 | Optimizer / 优化器 | Initial LR / 初始学习率 | Batch size / 批量大小 | Epochs / 训练轮数 | Method-specific settings / 方法特定设置 |
-|---|---|---:|---:|---:|---:|---|
-| Linear Probe | Linear classifier on frozen CLIP image features / 冻结 CLIP 图像特征上的线性分类器 | L-BFGS logistic regression | Selected through `C` / 通过 `C` 选择 | Full sampled feature set / 全部采样特征 | Up to 1,000 iterations / 最多 1,000 次迭代 | L2-regularized logistic regression; validation-based `C` search / 带 L2 正则的逻辑回归；基于验证集搜索 `C` |
-| Full Fine-tuning | CLIP image encoder and classification head / CLIP 图像编码器与分类头 | SGD | 0.0035 | 4 | `50/100/200`* | All image-encoder and classification-head parameters are updated / 更新全部图像编码器和分类头参数 |
-| CoOp | Text context vectors / 文本上下文向量 | SGD | 0.002 | 32 | `50/100/200` | 16 context tokens; class-specific context disabled; class token at the end / 16 个上下文 token；不使用类别特定上下文；类别 token 位于末尾 |
-| CoCoOp | Conditional prompt learner / 条件提示学习器 | SGD | 0.002 | 1 | 10 | Four context tokens initialized with `a photo of a` / 4 个上下文 token，以 `a photo of a` 初始化 |
-| CLIP-Adapter | Visual feature adapter only / 仅视觉特征适配器 | SGD | 0.002 | 32 | `50/100/200` | Bottleneck reduction factor 4; adapter branch weight 0.2; image and text encoders frozen / 瓶颈压缩率 4；适配器分支权重 0.2；图像和文本编码器冻结 |
-| Tip-Adapter | No gradient-based component / 无基于梯度的训练组件 | Training-free / 免训练 | -- | -- | -- | Key-value cache constructed from the few-shot training set / 根据少样本训练集构建键值缓存 |
-| MaPLe | Vision-language prompts and projection layers / 视觉语言 prompt 和投影层 | SGD | 0.0035 | 16 | 100 | Prompt length 2; prompt depth requires historical configuration confirmation / Prompt 长度 2；prompt depth 需要根据历史配置确认 |
-| UPT | Unified prompt generator / 统一 prompt 生成器 | SGD | 0.0015 | 16 | 100 | Fixed method-specific configuration; no dataset-specific sweep documented / 固定的方法特定配置；未记录数据集特定搜索 |
-| MCPL | Method-specific prompt parameters / 方法特定 prompt 参数 | SGD | 0.002 | 4 | 100 | Fixed method-specific configuration; historical implementation should be archived explicitly / 固定的方法特定配置；应明确归档历史实现 |
-| LoRA | Low-rank parameters with CLIP weights frozen / CLIP 权重冻结，仅训练低秩参数 | SGD | 0.002 | 4 | 200 | Rank 8; scaling parameter 16 / 秩为 8；缩放参数为 16 |
-| PromptSRC | Vision and text prompts / 视觉和文本 prompt | SGD | 0.0025 | 4 | 50 | Context length 4; prompt depth 9; text/image regularization weights 25/10 / 上下文长度 4；prompt depth 9；文本/图像正则权重 25/10 |
-| CoPrompt | Prompt and projection parameters / Prompt 和投影参数 | SGD | 0.0035 | 4 | 100 | Context length 2; prompt depth 9; two RandAugment views; cosine-distillation weight 1.0 / 上下文长度 2；prompt depth 9；两个 RandAugment 视图；余弦蒸馏权重 1.0 |
-| Prada Tuning | DCP prompts, coupling layers, and ViSo Adapters / DCP prompt、耦合层和 ViSo Adapter | SGD | 0.0035 | 4 | `50/100/200` | Prompt length 2 and depth 11; ViSo Adapter after layers 4--6; covariance dimension 128 / Prompt 长度 2、深度 11；ViSo Adapter 位于第 4--6 层；协方差维度 128 |
+For Prada Tuning, the manuscript uses L2V-DCP with prompt depth 11 and prompt length 2. The ViSo Adapter is inserted after the fourth, fifth, and sixth layers of the visual encoder, and its covariance matrix has a dimension of \(128 \times 128\).
 
-\* The current executable `ViT/zy.yaml` configuration contains a 50-epoch default for full fine-tuning, whereas the manuscript describes a shot-dependent `50/100/200` schedule. The exact configuration used to generate the published Table-I rows must be recorded before the final public release.
+> **中文：** 对于 Prada Tuning，论文采用 prompt depth 为 11、prompt length 为 2 的 L2V-DCP。ViSo Adapter 插入视觉编码器的第 4、5、6 层之后，其协方差矩阵维度为 \(128 \times 128\)。
 
-> **中文：** 当前可执行的 `ViT/zy.yaml` 配置中，全量微调的默认训练轮数为 50 个 epoch，而论文描述的是随 shot 变化的 `50/100/200` 训练轮数方案。因此，在最终公开发布前，必须记录生成论文表 I 结果时实际使用的确切配置。
+### Common Backbone and Evaluation Protocol / 统一骨干网络与评估协议
 
-The current repository also contains a prompt-depth discrepancy for MaPLe: the manuscript describes depth 9, whereas the current `MaPLe/zy.yaml` snapshot specifies depth 11. This discrepancy should be resolved by attaching the exact historical configuration to the corresponding result files.
+The manuscript adopts CLIP ViT-B/16 as the common backbone for CoOp, CoCoOp, CLIP-Adapter, Tip-Adapter, MaPLe, UPT, MCPL, LoRA, PromptSRC, and CoPrompt. For Linear Probe and Full Fine-tuning, the vision encoder of CLIP ViT-B/16 is used as the image representation backbone.
 
-> **中文：** 当前仓库中 MaPLe 的 prompt depth 也存在不一致：论文描述为 9，而当前 `MaPLe/zy.yaml` 快照指定为 11。该差异应通过将生成对应结果时使用的历史配置附加到结果文件中来解决。
+> **中文：** 对于 CoOp、CoCoOp、CLIP-Adapter、Tip-Adapter、MaPLe、UPT、MCPL、LoRA、PromptSRC 和 CoPrompt，论文统一采用 CLIP ViT-B/16 作为骨干网络。对于 Linear Probe 和 Full Fine-tuning，使用 CLIP ViT-B/16 的视觉编码器作为图像表征骨干。
 
-### Validation, Search, and Model Selection / 验证、搜索与模型选择
+The experiments are conducted on four pathology image datasets: PCam, BACH, MHIST, and BreakHis. The evaluated prediction unit is an individual image. The experiments use the 1-, 2-, 4-, 8-, and 16-shot settings rather than a base-to-novel class split, because the clinical label space in these pathology classification tasks is fixed.
 
-The neural baselines were evaluated using fixed method-specific configurations derived from their released recipes. We did not perform a broad dataset-specific grid search, and no hyperparameter was selected using the test partition. When validation was used for a selection decision, the criterion was top-1 accuracy on the fixed validation subset.
+> **中文：** 实验在四个病理图像数据集上进行：PCam、BACH、MHIST 和 BreakHis。预测单位为单张图像。由于这些病理分类任务具有固定的临床标签空间，实验采用 1、2、4、8 和 16-shot 设置，而不是 base-to-novel 类别划分。
 
-> **中文：** 神经网络基线采用源自其公开方案的固定方法特定配置进行评估。我们没有进行大范围的数据集特定网格搜索，也没有使用测试集选择超参数。当验证集被用于选择决策时，选择标准是固定验证子集上的 Top-1 准确率。
+For each few-shot setting, the reported result is calculated on the corresponding test partition. The manuscript reports the mean and standard deviation over three independent runs for the few-shot experiments.
 
-The CLIP linear probe was the exception because its regularization strength was explicitly selected using validation accuracy. The classifier uses L2-regularized logistic regression with the L-BFGS solver and `max_iter=1000`. The initial search evaluates `C` over `[1e6, 1e4, 1e2, 1, 1e-2, 1e-4, 1e-6]`, followed by eight log-space refinement steps around the best validation value.
+> **中文：** 对于每种少样本设置，结果均在对应的测试划分上计算。论文对少样本实验报告三次独立运行的均值和标准差。
 
-> **中文：** CLIP 线性探测是一个例外，因为其正则化强度明确通过验证集准确率进行选择。分类器采用带 L2 正则的逻辑回归、L-BFGS 求解器和 `max_iter=1000`。初始搜索在 `[1e6, 1e4, 1e2, 1, 1e-2, 1e-4, 1e-6]` 上进行，随后围绕验证集上表现最优的值进行 8 次对数空间细化搜索。
+The complete base train/validation/test partitions are established before few-shot sampling. The few-shot training samples are selected from the base training partition, while validation and final testing remain separate from the sampled training images.
 
-The repository configurations do not enable `best_val` checkpoint selection for the Table-I neural baselines. Unless a method-specific configuration explicitly overrides this behavior, the final checkpoint from the last training epoch (`last_step`) is evaluated. No test-set checkpoint selection or test-set early stopping is used.
+> **中文：** 完整的基础训练集、验证集和测试集划分在少样本采样之前建立。少样本训练样本从基础训练集中选择，验证集和最终测试集与采样得到的训练图像保持独立。
 
-> **中文：** 对于表 I 中的神经网络基线，仓库配置没有启用 `best_val` 检查点选择。除非方法特定配置明确覆盖该行为，否则评估使用最后一个训练 epoch 的最终检查点（`last_step`）。不使用基于测试集的检查点选择，也不使用基于测试集的早停。
+### Prada Tuning Training Configuration Reported in the Manuscript / 论文中报告的 Prada Tuning 训练配置
 
-The epoch budget is treated as part of each method configuration rather than as an early-stopping limit. This means that the reported results correspond to the final checkpoint under the documented training schedule, rather than the best test accuracy observed retrospectively during training.
+For few-shot learning, the manuscript uses SGD with a batch size of 4 and an initial learning rate of 0.0035. The maximum number of epochs is set to 200 for 8- and 16-shot experiments, 100 for 2- and 4-shot experiments, and 50 for 1-shot experiments, following the schedule described in the manuscript.
 
-> **中文：** 训练轮数被视为各方法配置的一部分，而不是早停上限。这意味着所报告的结果对应于记录的训练计划下的最终检查点，而不是事后从训练过程中选择测试准确率最高的检查点。
+> **中文：** 对于少样本学习，论文采用 SGD 优化器，批量大小为 4，初始学习率为 0.0035。根据论文中的训练计划，8-shot 和 16-shot 实验最多训练 200 个 epoch，2-shot 和 4-shot 实验最多训练 100 个 epoch，1-shot 实验最多训练 50 个 epoch。
 
-### Number of Runs and Seed Matching / 运行次数与随机种子匹配
+The Prada Tuning configuration uses the generic prompt template ``a photo of a [CLASS]'' and does not rely on manually designed pathology-specific prompts.
 
-Table I reports the mean and standard deviation over three independent runs for each method and shot setting. Each run uses one few-shot training draw and evaluates the resulting model on the complete base test partition.
+> **中文：** Prada Tuning 使用通用 prompt 模板 ``a photo of a [CLASS]''，不依赖人工设计的病理领域特定 prompt。
 
-> **中文：** 表 I 对每种方法和每个 shot 设置报告 3 次独立运行的均值和标准差。每次运行使用一次少样本训练采样，并在完整的基础测试集上评估所得模型。
+### Baseline Implementation Policy / 基线实现原则
 
-The number of runs alone does not guarantee a matched comparison. For every valid cross-method comparison, all methods must use one common seed set and identical few-shot manifests. The historical launcher scripts contain method-specific seed loops, so they are execution entry points rather than evidence that all historical outputs form a matched aggregate.
+For baselines whose descriptions in the manuscript state ``follows the official implementation'', the implementation should be identified by its official source, version, and configuration used for the reported experiment. This applies in particular to MCPL, LoRA, PromptSRC, and CoPrompt.
 
-> **中文：** 运行次数本身并不能保证比较是匹配的。对于任何有效的方法间比较，所有方法必须使用同一组随机种子和完全相同的少样本清单。历史启动脚本包含方法特定的随机种子循环，因此这些脚本只是执行入口，不能证明所有历史输出可以构成匹配汇总。
+> **中文：** 对于论文中描述为 ``follows the official implementation'' 的基线，应明确记录其官方来源、版本以及生成论文结果时使用的具体配置。这尤其适用于 MCPL、LoRA、PromptSRC 和 CoPrompt。
 
-Results computed from unmatched seed sets must not be presented as a matched comparison. If the historical result files do not satisfy the common-seed requirement, the affected rows must either be recomputed using the common seed set or reported separately as unmatched contextual results.
+The manuscript specifies the functional role of each baseline and the common CLIP backbone, but it does not provide a separate numerical hyperparameter search range for every baseline in the ``Comparison with SOTA'' subsection. Therefore, numerical search ranges, validation rules, and stopping criteria should only be reported in this README when they are supported by the original experiment records.
 
-> **中文：** 使用不匹配随机种子集合计算得到的结果不得作为匹配比较呈现。如果历史结果文件不满足共同随机种子要求，则受影响的结果行必须使用共同随机种子重新计算，或者单独报告为非匹配的上下文结果。
+> **中文：** 论文明确说明了各个基线的功能角色以及统一的 CLIP 骨干网络，但在 ``Comparison with SOTA'' 小节中没有为每一个基线单独给出数值化的超参数搜索范围。因此，只有在原始实验记录能够支持的情况下，README 才应报告具体的搜索范围、验证规则和停止条件。
 
-### Diagnostic Interpretation of Weak Baselines / 较弱基线的诊断性解释
+The public record should not infer baseline learning rates, batch sizes, epoch budgets, early-stopping rules, or checkpoint-selection criteria from an implementation file if those values are not explicitly stated as the settings used to generate the published Table-I results.
 
-The weak results of CLIP-Adapter and full fine-tuning are interpreted descriptively rather than as proof of a specific optimization failure.
+> **中文：** 如果某些学习率、批量大小、训练轮数、早停规则或检查点选择标准没有被明确说明为生成论文表 I 结果时使用的配置，则公开记录不应仅根据代码文件推断这些实验事实。
 
-> **中文：** 对于 CLIP-Adapter 和全量微调的较弱结果，我们采用描述性解释，而不将其视为某一种特定优化失败的证据。
+### Validation and Model Selection / 验证与模型选择
 
-| Method and dataset / 方法与数据集 | Observed result / 观测结果 | Supported interpretation / 可支持的解释 | Not established / 无法据此确定 |
-|---|---|---|---|
-| CLIP-Adapter on BACH | 21.7%--25.0% across 1--16 shots / 1--16-shot 为 21.7%--25.0% | Little useful improvement from the fixed visual adapter under this domain shift / 固定视觉适配器在该领域偏移下带来的有效改进有限 | Mode collapse or a unique optimization defect / 模式坍塌或某一种特定优化缺陷 |
-| CLIP-Adapter on BreakHis | 7.0%--12.8% for 1--8 shots and 18.1% at 16-shot / 1--8-shot 为 7.0%--12.8%，16-shot 为 18.1% | Severe low-shot weakness with partial recovery as labels increase / 低 shot 下表现较弱，标签增加后出现一定恢复 | The unique cause of the failure / 失败的唯一原因 |
-| Full fine-tuning on BACH | Non-monotonic means; standard deviations reach 12.0% and 14.1% at 4- and 16-shot / 均值不单调，4-shot 和 16-shot 标准差达到 12.0% 和 14.1% | Sensitivity to few-shot sampling and optimization; overfitting remains possible / 对少样本采样和优化较敏感，不能排除过拟合可能 | Confirmed overfitting without epoch-wise validation traces / 在缺少逐 epoch 验证轨迹时确认过拟合 |
-| Full fine-tuning on BreakHis | Accuracy increases from 8.3% to 39.6%; standard deviation reaches 8.8% and 8.3% at 8- and 16-shot / 准确率从 8.3% 提升到 39.6%，8-shot 和 16-shot 标准差达到 8.8% 和 8.3% | Additional labels improve optimization, but run-to-run sensitivity remains / 更多标签有助于优化，但运行间敏感性仍然存在 | Prediction collapse or unstable convergence as the sole explanation / 将预测坍塌或收敛不稳定确定为唯一解释 |
+The manuscript reports the final test accuracy for each method and shot setting and reports the mean and standard deviation over three independent runs. The manuscript does not separately specify a universal validation criterion, a common hyperparameter search space, or a common early-stopping rule for all baseline methods.
 
-Aggregate accuracy and standard deviation alone cannot distinguish conclusively among overfitting, unstable convergence, insufficient adaptation capacity, and concentrated class predictions. In particular, an accuracy close to the class-prior chance level is not by itself evidence of mode collapse.
+> **中文：** 论文报告了每种方法和每个 shot 设置下的最终测试准确率，并报告三次独立运行的均值和标准差。论文没有为所有基线统一规定一个验证标准、共同的超参数搜索空间或统一的早停规则。
 
-> **中文：** 仅凭汇总准确率和标准差，无法确定这些结果究竟源于过拟合、收敛不稳定、适配能力不足还是类别预测过度集中。特别是，接近类别先验随机水平的准确率本身并不能证明发生了模式坍塌。
+Accordingly, the validation and model-selection protocol should be recorded on a method-by-method basis. The following information should be attached to each baseline result before the public comparison is considered fully reproducible:
 
-The current experiment archive does not contain per-epoch validation curves, training-loss curves, or predicted-class histograms that can be traced unambiguously to every Table-I run. Accordingly, these diagnostics are not presented as available supporting evidence. The interpretation is restricted to the observed shot-wise trends and run-to-run variability.
+> **中文：** 因此，验证和模型选择流程应当按照方法逐一记录。在将公开比较视为完全可复现之前，每个基线结果都应附带以下信息：
 
-> **中文：** 当前实验归档没有保留能够与表 I 每次运行明确对应的逐 epoch 验证曲线、训练损失曲线或预测类别直方图。因此，本 README 不将这些诊断内容作为已经存在的支持证据。相关解释仅限于观测到的 shot 变化趋势和运行间波动。
+| Required item / 必要信息 | Required record / 应记录内容 |
+|---|---|
+| Validation criterion / 验证标准 | The metric used to select a hyperparameter or checkpoint, if validation was used / 如果使用验证集，应记录用于选择超参数或检查点的指标 |
+| Search range / 搜索范围 | The exact values or intervals evaluated for each tuned parameter / 每个调参参数实际评估的具体数值或区间 |
+| Search budget / 搜索预算 | Number of configurations or refinement steps evaluated / 评估的配置数量或细化搜索次数 |
+| Early stopping / 早停 | Whether early stopping was used and what criterion determined stopping / 是否使用早停以及停止判据 |
+| Checkpoint selection / 检查点选择 | The exact checkpoint evaluated for the test result / 测试结果所使用的确切检查点 |
+| Number of runs / 运行次数 | Number of independent runs and the unit of independence / 独立运行次数及独立性的定义 |
+| Seed provenance / 随机种子来源 | The seed set used by every method / 每种方法所使用的随机种子集合 |
+| Few-shot manifest / 少样本清单 | The exact sampled training images used in each run / 每次运行使用的确切训练图像清单 |
 
-The manuscript discussion has therefore been calibrated to state that the weak baseline patterns are consistent with domain-shift difficulty, limited adaptation capacity, few-shot sampling sensitivity, and optimization sensitivity. The manuscript does not claim that the BACH result proves mode collapse, catastrophic overfitting, or any other unique failure mechanism.
+The three-run mean and standard deviation are a valid matched comparison only if every method uses the same seed set and the same few-shot training manifests. If different methods were evaluated with different seed sets, those results should not be aggregated as a matched comparison.
 
-> **中文：** 因此，论文 Discussion 中的表述已进行审慎化处理，说明较弱基线的表现可能与领域偏移困难、适配能力有限、少样本采样敏感性和优化敏感性相一致。论文不再声称 BACH 上的结果证明了模式坍塌、灾难性过拟合或其他某一种确定的失败机制。
+> **中文：** 只有当所有方法使用相同的随机种子集合和相同的少样本训练清单时，三次运行的均值和标准差才可以构成有效的匹配比较。如果不同方法使用了不同的随机种子集合，则这些结果不应被汇总为匹配比较。
 
+### Observed Weak-Baseline Patterns / 较弱基线的观测结果
 
+The manuscript identifies CLIP-Adapter and Full Fine-tuning as methods whose performance is unexpectedly weak or variable on selected datasets. These observations are discussed descriptively and are not interpreted as definitive evidence of a single optimization failure mechanism.
 
-### Reproducibility Boundaries / 可复现性边界
+> **中文：** 论文指出，CLIP-Adapter 和 Full Fine-tuning 在部分数据集上的表现较弱或波动较大。这些现象仅进行描述性讨论，不被解释为某一种确定的优化失败机制的证据。
 
-This README documents the available optimization settings and the evidence that can be traced to the current repository. It does not claim that every historical Table-I result was generated by the newest configuration file. Before the final public release, each reported row should be linked to its exact configuration file, few-shot manifest, seed set, checkpoint, and result log.
+The CLIP-Adapter results on BACH remain close to the four-class chance level across the evaluated shot settings. On BreakHis, the CLIP-Adapter results are weak in the low-shot settings and improve as the number of labeled examples increases.
 
-> **中文：** 本 README 记录当前仓库中能够核验的优化配置以及可以追溯的实验依据，但不声称论文表 I 中的每一条历史结果都由当前最新配置文件生成。在最终公开发布之前，每一条报告结果都应关联到其确切的配置文件、少样本清单、随机种子集合、模型检查点和结果日志。
+> **中文：** CLIP-Adapter 在 BACH 上的结果在不同 shot 设置下均接近四分类随机水平。在 BreakHis 上，CLIP-Adapter 在低 shot 设置下表现较弱，并随着有标签样本数量增加而有所改善。
 
-The comparison is therefore intended to establish practical behavior under the reported image-level few-shot protocol. It should not be interpreted as a proof that Prada Tuning is intrinsically superior to every baseline under identical optimization budgets, identical architectures, or fully controlled experimental conditions.
+Full Fine-tuning shows non-monotonic behavior on BACH and relatively large run-to-run variation in some shot settings. On BreakHis, its accuracy improves as more labeled examples become available, but the performance remains sensitive to the specific few-shot run.
 
-> **中文：** 因此，该比较旨在说明所报告的图像级少样本协议下不同方法的实际表现。它不应被解释为 Prada Tuning 在完全相同的优化预算、相同网络结构或完全受控实验条件下内在优于所有基线的证明。
+> **中文：** Full Fine-tuning 在 BACH 上呈现非单调趋势，并且在部分 shot 设置下具有较大的运行间波动。在 BreakHis 上，随着有标签样本数量增加，其准确率有所提升，但性能仍然对具体的少样本运行较为敏感。
+
+These patterns may be related to the interaction between the general-domain CLIP pretraining distribution and the pathology image domain, the limited number of labeled examples, the adaptation capacity of each method, and optimization sensitivity. They are compatible with possible overfitting or unstable optimization, but the aggregate accuracy and standard deviation do not establish these mechanisms conclusively.
+
+> **中文：** 这些现象可能与通用领域 CLIP 的预训练分布和病理图像领域之间的差异、有限的有标签样本数量、不同方法的适配能力以及优化敏感性共同相关。它们与潜在的过拟合或优化不稳定相一致，但汇总准确率和标准差无法确定性地证明这些机制。
+
+An accuracy close to the class-prior chance level is not, by itself, evidence of mode collapse. A specific claim of mode collapse would require additional run-level evidence, such as predicted-class distributions or class-wise confusion patterns.
+
+> **中文：** 接近类别先验随机水平的准确率本身不能证明发生了模式坍塌。如果要明确声称模式坍塌，需要额外的运行级证据，例如预测类别分布或按类别统计的混淆模式。
+
+### Diagnostic Evidence / 诊断性证据
+
+The manuscript reports aggregate test accuracy and standard deviation across independent runs. It does not report complete per-epoch validation curves, training-loss curves, or predicted-class distributions for every baseline run in the ``Comparison with SOTA'' subsection.
+
+> **中文：** 论文报告了独立运行上的汇总测试准确率和标准差，但在 ``Comparison with SOTA'' 小节中没有报告每个基线运行对应的完整逐 epoch 验证曲线、训练损失曲线或预测类别分布。
+
+Therefore, the weak-baseline interpretation is limited to the observed shot-wise performance trends and run-to-run variability. The results should not be used to claim that CLIP-Adapter or Full Fine-tuning definitely suffers from overfitting, mode collapse, or unstable convergence without additional traceable diagnostic evidence.
+
+> **中文：** 因此，对较弱基线的解释仅限于观测到的 shot 变化趋势和运行间波动。在没有额外且可追溯的诊断证据的情况下，不应据此声称 CLIP-Adapter 或 Full Fine-tuning 必然存在过拟合、模式坍塌或收敛不稳定。
+
+If validation curves, training-loss curves, or predicted-class distributions are available for the exact runs reported in Table I, they should be added to this repository with the corresponding dataset, shot setting, method, and seed metadata. Diagnostics that cannot be linked unambiguously to the published results should not be presented as evidence for those results.
+
+> **中文：** 如果能够获得与表 I 中确切运行相对应的验证曲线、训练损失曲线或预测类别分布，则应将其连同数据集、shot 设置、方法和随机种子元数据一并添加到仓库中。无法与论文结果明确对应的诊断内容，不应被作为这些结果的支持证据。
+
+### Scope of the Comparison / 比较范围
+
+The reported comparison evaluates practical image-level few-shot behavior under a common general-domain CLIP family. It is not a fully controlled comparison of all baseline hyperparameters, model capacities, pretraining data, or optimization budgets.
+
+> **中文：** 该比较评估的是统一通用领域 CLIP 模型家族下的实际图像级少样本表现。它不是对所有基线的超参数、模型容量、预训练数据或优化预算进行完全控制的比较。
+
+The results therefore provide evidence about the relative practical behavior of Prada Tuning and the evaluated CLIP-based baselines under the reported protocol. They do not, by themselves, prove that Prada Tuning is intrinsically superior to every baseline under identical tuning budgets and fully controlled optimization conditions.
+
+> **中文：** 因此，这些结果能够说明 Prada Tuning 与所评估 CLIP 基线在当前实验协议下的相对实际表现。但仅凭这些结果，不能证明 Prada Tuning 在相同调参预算和完全受控优化条件下内在优于所有基线。
+
+### Reproduction Record / 复现实验记录
+
+Before a final public release, each Table-I result should be associated with the following records:
+
+> **中文：** 在最终公开发布之前，表 I 中的每条结果都应关联以下实验记录：
+
+| Record / 记录 | Required information / 所需信息 |
+|---|---|
+| Method / 方法 | Exact baseline name and implementation / 确切的基线名称和实现 |
+| Backbone / 骨干网络 | CLIP variant and encoder branch / CLIP 版本及使用的编码器分支 |
+| Dataset and shot / 数据集与 shot | Dataset, shot number, and partition protocol / 数据集、shot 数和划分协议 |
+| Hyperparameters / 超参数 | Values actually used for the published result / 生成论文结果时实际使用的参数 |
+| Validation / 验证 | Validation metric and selection rule / 验证指标和选择规则 |
+| Search / 搜索 | Search range and search budget / 搜索范围和搜索预算 |
+| Stopping / 停止 | Early-stopping or fixed-epoch rule / 早停或固定训练轮数规则 |
+| Checkpoint / 检查点 | Checkpoint used for final test evaluation / 最终测试所使用的检查点 |
+| Runs / 运行 | Number of runs and seed set / 运行次数和随机种子集合 |
+| Manifest / 清单 | Exact few-shot sample manifest / 确切的少样本采样清单 |
+| Output / 输出 | Test accuracy, validation accuracy, and available diagnostics / 测试准确率、验证准确率和可用诊断信息 |
 
 
 
