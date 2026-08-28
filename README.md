@@ -69,9 +69,7 @@ To make the downstream comparison consistent across pathology foundation models,
 
 ## Results / 实验结果
 
-Each few-shot cell should be reported as **mean +/- standard deviation (%)** . 
-
-> **中文：** 每个少样本单元格均应报告为**均值 +/- 标准差（%）**。
+Each few-shot result is reported as the mean +/- standard deviation (%) over three matched runs.
 
 ### PatchCamelyon (PCam)
 
