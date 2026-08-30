@@ -4,7 +4,7 @@
 
 The main study evaluates Prada Tuning and other parameter-efficient fine-tuning (PEFT) strategies under the same general-domain CLIP ViT-B/16 backbone. That controlled design isolates the contribution of Prada Tuning, but it does not answer a separate practical question: how does adapting a general-domain CLIP model compare with directly using pathology-pretrained foundation models? To provide this missing context, we evaluate frozen UNI and Virchow2 encoders with a lightweight linear classifier under the same 1-, 2-, 4-, 8-, and 16-shot settings.
 
-<!--> **中文：** 正文在同一个通用领域 CLIP ViT-B/16 骨干网络下评估 Prada Tuning 和其他参数高效微调（PEFT）策略。该受控设计能够分离 Prada Tuning 本身的贡献，但尚未回答另一个实际问题：适配通用领域 CLIP 模型与直接使用病理预训练基础模型相比表现如何？为补充这一背景，我们在相同的 1、2、4、8 和 16-shot 设置下，评估冻结的 UNI 和 Virchow2 编码器与轻量线性分类器的组合。-->
+<!-- **中文：** 正文在同一个通用领域 CLIP ViT-B/16 骨干网络下评估 Prada Tuning 和其他参数高效微调（PEFT）策略。该受控设计能够分离 Prada Tuning 本身的贡献，但尚未回答另一个实际问题：适配通用领域 CLIP 模型与直接使用病理预训练基础模型相比表现如何？为补充这一背景，我们在相同的 1、2、4、8 和 16-shot 设置下，评估冻结的 UNI 和 Virchow2 编码器与轻量线性分类器的组合。-->
 
 These experiments are provided as contextual baselines rather than architecture-controlled ablations. Prada Tuning is not integrated into UNI or Virchow2 because these models differ from CLIP in pretraining data, architecture, token construction, and feature representation. The comparison therefore addresses practical performance under a matched downstream protocol, not the isolated effect of backbone pretraining.
 
